@@ -28,7 +28,9 @@ public class PcAction {
 	}
 	@GetMapping("sc/{id}")	
 	public int de(@PathVariable String id) {
+		System.out.println("第一次修改");
 		return pc.de(id);
+		
 	}
 	@PostMapping("person")
 	public int addPersonInfo(@RequestBody Pc person) {
