@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.accp.t4.dao.PcDAO">
+	<!-- 主详读取 -->
+	<resultMap type="com.accp.t4.pojo.Pc" id="personMap">
+		<id property="bh" column="bh" />
+		<result property="name" column="name" />
+		<result property="phone" column="phone" />
+		<result property="c" column="c" />
+		<collection property="list" column="bh" select="qu"/>
+	</resultMap>
+	<select id="query" resultMap="personMap">
+ 	SELECT * FROM pc 
+	</select>
+	<select id="qu" resultType="com.accp.t4.pojo.Cj">
+	SELECT * FROM CJ  WHERE bh=#{0}
+	</select>
+
+	<select id="query2" resultType="com.accp.t4.pojo.Pc">
+	SELECT * FROM pc where bh=#{bh}
+	</select>
+	<delete id="de">
+	delete from pc where bh=#{id};
+	delete from cj where bh=#{id};
+	</delete>
+	
+	<!-- 主详新增 -->
+	<insert id="addPersonInfo">
+		insert into pc(bh,name,phone)
+		values(#{person.bh},#{person.name},#{person.phone});
+			<if test="person.list.size()!=0">
+			insert into cj(bh,count,data) values
+			<foreach collection="person.list" item="temp"
+				separator=",">
+				(#{temp.bh},#{temp.count},#{temp.data})
+			</foreach>
+			;
+			</if>
+	</insert>
+	
+	<update id="update" >
+	UPDATE 
+  	pc	
+	<set>
+	<if test="person.name!=null">
+	name=#{person.name},
+	</if>
+	<if test="person.phone!=null">
+	phone=#{person.phone},
+	</if>
+	</set>
+	where bh=#{person.bh}
+	</update>
+	
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.accp.t4.dao.IPersonDao">
+
+	<select id="queryPerson" resultType="com.accp.t4.pojo.Person">
+		SELECT * FROM person
+	</select>
+	
+	<select id="queryPerson2" resultType="com.accp.t4.pojo.Person">
+	SELECT * FROM person 
+	<where>
+	<if test="pname!='null'">
+	and pname LIKE   '%${pname}%'
+	</if>
+	<if test="pid!='null'">
+	and  pid LIKE  '%${pid}%'
+	</if>
+	</where>
+	
+	</select>
+	
+
+	<!-- 主详读取 -->
+	<resultMap type="person" id="personMap">
+		<id property="pid" column="pid" />
+		<result property="pname" column="pname" />
+		<result property="psex" column="psex" />
+		<result property="pdate" column="pdate" />
+		<collection property="addresses" column="pid"
+			select="queryAddress" />
+	</resultMap>
+	<!-- <select id="queryAddress" resultType="address">
+		select * from tbl_address
+		where apid=#{0}
+	</select> -->
+	<select id="loadPerson" resultType="person">
+		SELECT * FROM
+		person
+		where
+		pid=#{pid}
+	</select>
+
+	<!-- 主详删除 -->
+	<delete id="deletePerson">
+		<!-- delete from tbl_address where apid=#{pid}; -->
+		delete from
+		person where pid=#{pid};
+	</delete>
+
+	<!-- 主详新增 -->
+	<insert id="addPersonInfo">
+		insert into pc(bh,name,phone)
+		values(#{person.pid},#{person.name},#{person.phone});
+		<if test="person.addresses.size()!=0">
+			insert into cj(count,data) values
+			<foreach collection="person.addresses" item="temp"
+				separator=",">
+				(#{temp.count},#{temp.data})
+			</foreach>
+			;
+		</if>
+	</insert>
+	
+	<update id="updatePerson">
+		update person
+		<set>
+			<if test="person.pname!=null">
+				pname=#{person.pname},
+			</if>
+			<if test="person.name!=null">
+				name=#{person.name},
+			</if>
+			<if test="person.pdate!=null">
+				pdate=#{person.pdate,jdbcType=DATE},
+			</if>
+				<if test="person.cname!=null">
+				cname=#{person.cname},
+			</if>
+				<if test="person.phone!=null">
+				phone=#{person.phone},
+			</if>
+		</set>
+		where pid=#{person.pid}
+	</update>
+
+</mapper>
